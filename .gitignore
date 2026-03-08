@@ -1,0 +1,32 @@
+# Go
+bin/
+dist/
+*.test
+*.out
+coverage.out
+
+# Local database / runtime
+*.db
+*.db-*
+*.sqlite
+*.sqlite-*
+
+# Environment
+.env
+.env.*
+!.env.example
+!.env.test
+
+# Node / pnpm
+node_modules/
+web/ui/node_modules/
+web/sdk/node_modules/
+web/ui/.svelte-kit/
+web/ui/build/
+web/sdk/dist/
+
+# IDE / OS
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db

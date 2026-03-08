@@ -1,0 +1,11 @@
+{
+  "name": "bms-monorepo",
+  "private": true,
+  "packageManager": "pnpm@10.30.2",
+  "scripts": {
+    "sdk:generate": "pnpm --filter @pafthang/bms-sdk run generate",
+    "sdk:build": "pnpm --filter @pafthang/bms-sdk run build",
+    "ui:dev": "pnpm --filter @pafthang/bms-ui run dev",
+    "ui:build": "pnpm --filter @pafthang/bms-ui run build"
+  }
+}

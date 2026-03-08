@@ -1,0 +1,62 @@
+name: CI
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache: true
+
+      - name: Download deps
+        run: go mod download
+
+      - name: Vet
+        run: go vet ./...
+
+      - name: Unit + integration tests
+        run: go test ./...
+
+      - name: Generate OpenAPI with quality gates
+        run: |
+          go run ./cmd/arc \
+            -format json \
+            -out openapi/openapi.json \
+            -validate-quality \
+            -require-tags \
+            -require-servers \
+            -require-security-schemes BearerAuth \
+            -require-examples
+
+      - name: Check OpenAPI file and operation IDs
+        run: |
+          test -s openapi/openapi.json
+          rg -n '"operationId": "auth_register"' openapi/openapi.json
+          rg -n '"operationId": "workspaces_create"' openapi/openapi.json
+          rg -n '"operationId": "bookmarks_create"' openapi/openapi.json
+          rg -n '"operationId": "tags_create"' openapi/openapi.json
+
+      - name: OpenAPI 3.1 validation test
+        run: go test ./... -run TestOpenAPIContractQuality -count=1
+
+      - name: OpenAPI 3.1 schema validation
+        run: |
+          python3 -m pip install --quiet openapi-spec-validator
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          from openapi_spec_validator import validate_spec
+          spec = json.loads(Path("openapi/openapi.json").read_text())
+          validate_spec(spec)
+          print("OpenAPI 3.1 validation: OK")
+          PY
