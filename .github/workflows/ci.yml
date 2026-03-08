@@ -41,10 +41,10 @@ jobs:
       - name: Check OpenAPI file and operation IDs
         run: |
           test -s openapi/openapi.json
-          rg -n '"operationId": "auth_register"' openapi/openapi.json
-          rg -n '"operationId": "workspaces_create"' openapi/openapi.json
-          rg -n '"operationId": "bookmarks_create"' openapi/openapi.json
-          rg -n '"operationId": "tags_create"' openapi/openapi.json
+          grep -n '"operationId": "auth_register"' openapi/openapi.json
+          grep -n '"operationId": "workspaces_create"' openapi/openapi.json
+          grep -n '"operationId": "bookmarks_create"' openapi/openapi.json
+          grep -n '"operationId": "tags_create"' openapi/openapi.json
 
       - name: OpenAPI 3.1 validation test
         run: go test ./... -run TestOpenAPIContractQuality -count=1
